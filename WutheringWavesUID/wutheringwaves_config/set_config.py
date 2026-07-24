@@ -60,9 +60,11 @@ async def set_push_value(ev: Event, func: str, uid: str, value: int, ck: str):
     if await WavesPush.update_data_by_uid(uid=uid, bot_id=ev.bot_id, **{f"{status}_value": value}) == 0:
         from ..wutheringwaves_stamina.notice_stamina import get_next_refresh_time
 
-        refreshTimeStamp = await get_next_refresh_time(uid, ck)
-        if refreshTimeStamp:
-            await set_push_time(ev.bot_id, uid, refreshTimeStamp)
+        user = await WavesUser.select_waves_user(uid, ev.user_id, ev.bot_id)
+        if user:
+            refreshTimeStamp = await get_next_refresh_time(user)
+            if refreshTimeStamp:
+                await set_push_time(ev.bot_id, uid, refreshTimeStamp)
 
         return f"设置成功!\nUID:{uid}\n当前{func}推送阈值:{value}\n"
     else:
@@ -118,8 +120,8 @@ async def set_config_func(ev: Event, uid: str = "0"):
         if not await get_push_config():
             return "体力推送功能已禁用!\n"
 
-        if ev.bot_id in ["qqgroup", "qq_official"] and option not in ["on", "off"]:
-            return "官Q体力推送功能请在私聊消息开启!\n"
+        if ev.bot_id in ["qqgroup", "qq_official"]:
+            other_msg = "官Q无权限可能无法推送\n"
 
         # 执行设置
         await WavesUser.update_data_by_uid(
