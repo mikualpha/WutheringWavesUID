@@ -51,12 +51,11 @@ CONFIG_DEFAULT: dict[str, GSC] = {
         ["all"],
         options=[
             "all",
-            "小羊早睡不遭罪",
             "金铃子攻略组",
             "結星",
             "Moealkyne",
             "小沐XMu",
-            "吃我无痕",
+            "轩儿",
         ],
     ),
     "GuideSegment": GsBoolConfig("攻略切段", "避免攻略过长过大", False),
@@ -95,6 +94,11 @@ CONFIG_DEFAULT: dict[str, GSC] = {
         "排行榜qq头像缓存开关",
         False,
     ),
+    "ResourceCache": GsBoolConfig(
+        "图片资源缓存开关",
+        "图片资源缓存开关",
+        False,
+    ),
     "RankUseToken": GsBoolConfig(
         "有token才能进排行",
         "有token才能进排行",
@@ -103,6 +107,11 @@ CONFIG_DEFAULT: dict[str, GSC] = {
     "DelInvalidCookie": GsBoolConfig(
         "每天定时删除无效token",
         "每天定时删除无效token",
+        False,
+    ),
+    "AllowImportGachaLogs": GsBoolConfig(
+        "允许用户导入抽卡记录",
+        "是否允许用户直接更新抽卡记录",
         False,
     ),
     "AnnMinuteCheck": GsIntConfig("公告推送时间检测（单位min）", "公告推送时间检测（单位min）", 10, 60),

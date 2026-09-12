@@ -46,6 +46,7 @@ from .api import (
     ROLE_LIST_URL,
     SERVER_ID,
     SERVER_ID_NET,
+    SKIN_DATA_URL,
     SLASH_DETAIL_URL,
     SLASH_INDEX_URL,
     TOWER_DETAIL_URL,
@@ -86,6 +87,7 @@ class WavesApi:
         self.captcha_solver = get_solver()
         if self.captcha_solver:
             logger.success(f"使用过码器: {self.captcha_solver.get_name()}")
+        self.last_error: str | None = None
 
     async def get_session(self, proxy: str | None = None) -> aiohttp.ClientSession:
         key = f"{proxy or 'no_proxy'}"
@@ -154,9 +156,13 @@ class WavesApi:
         return headers
 
     async def get_ck_result(self, uid, user_id, bot_id) -> tuple[bool, str | None]:
+        self.last_error = None
         ck = await self.get_self_waves_ck(uid, user_id, bot_id)
         if ck:
             return True, ck
+        # 系统维护时不再尝试公共ck，直接返回维护信息
+        if self.last_error:
+            return False, None
         ck = await self.get_waves_random_cookie(uid, user_id)
         return False, ck
 
@@ -172,11 +178,17 @@ class WavesApi:
         if not self.is_net(uid):
             data = await self.login_log(uid, waves_user.cookie)
             if not data.success:
+                if data.is_system_maintenance:
+                    self.last_error = data.throw_msg()
+                    return ""
                 await data.mark_cookie_invalid(uid, waves_user.cookie)
                 return ""
 
             data = await self.refresh_data(uid, waves_user.cookie)
             if not data.success:
+                if data.is_system_maintenance:
+                    self.last_error = data.throw_msg()
+                    return ""
                 if data.is_bat_token_invalid:
                     if waves_user := await self.refresh_bat_token(waves_user):
                         return waves_user.cookie
@@ -213,11 +225,17 @@ class WavesApi:
 
             data = await self.login_log(user.uid, user.cookie)
             if not data.success:
+                if data.is_system_maintenance:
+                    self.last_error = data.throw_msg()
+                    break
                 await data.mark_cookie_invalid(user.uid, user.cookie)
                 continue
 
             data = await self.refresh_data(user.uid, user.cookie)
             if not data.success:
+                if data.is_system_maintenance:
+                    self.last_error = data.throw_msg()
+                    break
                 await data.mark_cookie_invalid(user.uid, user.cookie)
 
                 if times <= 0:
@@ -476,6 +494,19 @@ class WavesApi:
             "roleId": roleId,
         }
         return await self._waves_request(MORE_ACTIVITY_URL, "POST", header, data=data)
+
+    async def get_skin_data(self, roleId: str, token: str, serverId: str | None = None):
+        """皮肤数据"""
+        header = await get_base_header()
+        used_headers = await self.get_used_headers(cookie=token, uid=roleId)
+        header.update(used_headers)
+
+        data = {
+            "gameId": GAME_ID,
+            "serverId": self.get_server_id(roleId, serverId),
+            "roleId": roleId,
+        }
+        return await self._waves_request(SKIN_DATA_URL, "POST", header, data=data)
 
     async def get_request_token(self, roleId: str, token: str, did: str, serverId: str | None = None) -> tuple[bool, str]:
         """请求token"""

@@ -19,6 +19,7 @@ PHANTOM_PATH = RESOURCE_PATH / "phantom"
 MATERIAL_PATH = RESOURCE_PATH / "material"
 FETTER_PATH = RESOURCE_PATH / "fetter"
 AVATAR_PATH = RESOURCE_PATH / "waves_avatar"
+CIRCLE_AVATAR_PATH = RESOURCE_PATH / "waves_circle_avatar"
 WEAPON_PATH = RESOURCE_PATH / "waves_weapon"
 ROLE_PILE_PATH = RESOURCE_PATH / "role_pile"
 ROLE_DETAIL_PATH = RESOURCE_PATH / "role_detail"
@@ -26,6 +27,12 @@ ROLE_DETAIL_SKILL_PATH = ROLE_DETAIL_PATH / "skill"
 ROLE_DETAIL_CHAINS_PATH = ROLE_DETAIL_PATH / "chains"
 SHARE_BG_PATH = RESOURCE_PATH / "share"
 MONSTER_PATH = RESOURCE_PATH / "monster"
+ALL_SKIN_PATH = RESOURCE_PATH / "skin"
+ROLE_SKIN_PATH = ALL_SKIN_PATH / "role"
+WEAPON_SKIN_PATH = ALL_SKIN_PATH / "weapon"
+FLY_SKIN_PATH = ALL_SKIN_PATH / "fly"
+CALABASH_SKIN_PATH = ALL_SKIN_PATH / "calabash"
+ORNAMENT_SKIN_PATH = ALL_SKIN_PATH / "ornament"
 
 # 攻略
 GUIDE_PATH = MAIN_PATH / "guide_new"
@@ -41,6 +48,8 @@ JIEXING_GUIDE_PATH = GUIDE_PATH / "JieXing"
 XIAOYANG_GUIDE_PATH = GUIDE_PATH / "XiaoYang"
 # 吃我无痕 攻略库
 WUHEN_GUIDE_PATH = GUIDE_PATH / "WuHen"
+# 轩儿 攻略库
+XVANER_GUIDE_PATH = GUIDE_PATH / "XvanEr"
 
 # 自定义背景图
 CUSTOM_CARD_PATH = MAIN_PATH / "custom_role_pile"
@@ -54,6 +63,7 @@ MATRIX_PATH = OTHER_PATH / "matrix"
 CHALLENGE_PATH = OTHER_PATH / "challenge"
 ANN_CARD_PATH = OTHER_PATH / "ann_card"
 POKER_PATH = OTHER_PATH / "poker"
+SKIN_PATH = OTHER_PATH / "skin"
 
 
 # 别名
@@ -73,6 +83,7 @@ def init_dir():
         MATERIAL_PATH,
         FETTER_PATH,
         AVATAR_PATH,
+        CIRCLE_AVATAR_PATH,
         WEAPON_PATH,
         ROLE_PILE_PATH,
         ROLE_DETAIL_PATH,
@@ -85,6 +96,7 @@ def init_dir():
         JINLINGZI_GUIDE_PATH,
         JIEXING_GUIDE_PATH,
         XIAOYANG_GUIDE_PATH,
+        XVANER_GUIDE_PATH,
         CUSTOM_CARD_PATH,
         OTHER_PATH,
         CALENDAR_PATH,
@@ -94,6 +106,13 @@ def init_dir():
         ANN_CARD_PATH,
         ALIAS_PATH,
         CUSTOM_MR_CARD_PATH,
+        SKIN_PATH,
+        ALL_SKIN_PATH,
+        ROLE_SKIN_PATH,
+        WEAPON_SKIN_PATH,
+        FLY_SKIN_PATH,
+        CALABASH_SKIN_PATH,
+        ORNAMENT_SKIN_PATH,
     ]:
         i.mkdir(parents=True, exist_ok=True)
 
