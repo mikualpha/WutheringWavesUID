@@ -145,6 +145,23 @@ class WuWaCalc:
 
         return result
 
+    def get_weapon_stats(
+        self,
+        weapon_result: WavesWeaponResult,
+        weapon_id: str | int,
+        include_sub_stat: bool = False,
+    ):
+        stats = weapon_result.stats
+        if not stats:
+            logger.warning(f"武器基础属性缺失，将以 0 攻击力计算：{weapon_id}")
+            return "0", None
+
+        weapon_atk = stats[0].get("value", "0")
+        weapon_sub_stat = stats[1] if len(stats) > 1 else None
+        if include_sub_stat and weapon_sub_stat is None:
+            logger.warning(f"武器副属性缺失，将跳过副属性计算：{weapon_id}")
+        return weapon_atk, weapon_sub_stat
+
     def enhance_summation_phantom_value(
         self,
         result: dict[str, str | float],
@@ -179,7 +196,7 @@ class WuWaCalc:
         _def = int(char_result.stats["def"])
 
         # 武器基础攻击
-        _weapon_atk = weapon_result.stats[0]["value"]
+        _weapon_atk, _ = self.get_weapon_stats(weapon_result, weapon_id)
         result["atk_flat"] = float(result.get("攻击", "0"))
         result["life_flat"] = float(result.get("生命", "0"))
         result["def_flat"] = float(result.get("防御", "0"))
@@ -247,15 +264,20 @@ class WuWaCalc:
         # 基础防御
         _def = int(char_result.stats["def"])
         # 武器基础攻击
-        _weapon_atk = weapon_result.stats[0]["value"]
+        _weapon_atk, weapon_sub_stat = self.get_weapon_stats(
+            weapon_result,
+            weapon_id,
+            include_sub_stat=True,
+        )
         card_sort_map["char_atk"] = float(_atk)
         card_sort_map["weapon_atk"] = float(_weapon_atk)
         card_sort_map["char_life"] = float(_life)
         card_sort_map["char_def"] = float(_def)
         # 武器副词条
-        weapon_sub_name = weapon_result.stats[1]["name"]
-        weapon_sub_value = weapon_result.stats[1]["value"]
-        card_sort_map[weapon_sub_name] = sum_percentages(weapon_sub_value, card_sort_map[weapon_sub_name])
+        if weapon_sub_stat:
+            weapon_sub_name = weapon_sub_stat["name"]
+            weapon_sub_value = weapon_sub_stat["value"]
+            card_sort_map[weapon_sub_name] = sum_percentages(weapon_sub_value, card_sort_map[weapon_sub_name])
 
         # 武器谐振
         if weapon_result.sub_effect:
